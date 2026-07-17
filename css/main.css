@@ -2082,6 +2082,29 @@ html.no-anim .hero {
   text-decoration: underline;
 }
 
+/* ---------- Single photo break (spread through a page, not a gallery) ---------- */
+.photo-break {
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+}
+
+.photo-break figure {
+  border-radius: var(--radius-media);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+}
+
+.photo-break img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 700px) {
+  .photo-break figure {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 @media (max-width: 700px) {
   .gallery-grid {
     grid-template-columns: 1fr 1fr;
