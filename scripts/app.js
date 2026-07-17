@@ -41,6 +41,62 @@
     });
   }
 
+  /* ---------- Nav dropdown (Issues menu) ---------- */
+  var navDropdowns = document.querySelectorAll(".nav-dropdown");
+  var DROPDOWN_CLOSE_DELAY = 350; // ms grace period so crossing the gap to the menu doesn't close it
+  navDropdowns.forEach(function (dropdown) {
+    var trigger = dropdown.querySelector(".nav-dropdown-trigger");
+    if (!trigger) return;
+    var closeTimer = null;
+
+    function openDropdown() {
+      clearTimeout(closeTimer);
+      dropdown.classList.add("is-open");
+      trigger.setAttribute("aria-expanded", "true");
+    }
+    function scheduleClose() {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function () {
+        dropdown.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+      }, DROPDOWN_CLOSE_DELAY);
+    }
+
+    trigger.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dropdown.classList.contains("is-open")) {
+        clearTimeout(closeTimer);
+        dropdown.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+      } else {
+        openDropdown();
+      }
+    });
+
+    if (window.matchMedia("(hover: hover)").matches) {
+      dropdown.addEventListener("mouseenter", openDropdown);
+      dropdown.addEventListener("mouseleave", scheduleClose);
+    }
+  });
+  document.addEventListener("click", function (e) {
+    navDropdowns.forEach(function (dropdown) {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove("is-open");
+        var trigger = dropdown.querySelector(".nav-dropdown-trigger");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      navDropdowns.forEach(function (dropdown) {
+        dropdown.classList.remove("is-open");
+        var trigger = dropdown.querySelector(".nav-dropdown-trigger");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+      });
+    }
+  });
+
   /* ---------- Scroll reveals ---------- */
   var revealEls = document.querySelectorAll("[data-reveal]");
 
@@ -207,9 +263,16 @@
       link: "migraines-and-headaches.html"
     },
     {
-      name: "Stress, anxiety and depression",
-      desc: "The body keeps the score: tight shoulders, poor sleep, a racing mind. Acupuncture and herbal medicine help settle the nervous system so you can cope well again.",
-      examples: ["Panic attacks", "Poor sleep", "Tension", "Low mood"],
+      name: "Stress",
+      desc: "A little stress can keep you motivated, but ongoing stress drains your energy, affects your mood and leads to long-term health issues. The right care brings your body and mind back into balance.",
+      examples: ["Tight shoulders and jaw clenching", "Poor sleep", "Low energy", "Digestive upset"],
+      therapies: ["Acupuncture", "Physiotherapy", "Chinese Herbal Medicine", "Clinical Pilates"],
+      link: "stress.html"
+    },
+    {
+      name: "Anxiety and depression",
+      desc: "Anxiety and depression are not just in the mind, they show up in the body: tight muscles, disrupted sleep, low energy. We offer calming, evidence-informed support alongside any care you already receive.",
+      examples: ["Panic attacks", "Poor sleep", "Physical tension", "Low mood"],
       therapies: ["Acupuncture", "Chinese Herbal Medicine"],
       link: "stress-anxiety-and-depression.html"
     },
