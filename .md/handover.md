@@ -80,3 +80,13 @@ Site isn't live yet, so no AI-citation baseline could be checked (nothing to aud
 ## Verification status
 
 Every change this session was verified with a full-site Playwright pass (all 47 pages): zero console errors, zero failed network requests, all internal links resolve. Last full clean pass confirmed at end of this session.
+
+---
+
+## Nav: "Issues" dropdown (added, then hover-fixed)
+
+Added an "Issues" dropdown to the main nav on all 47 pages, listing the 10 condition pages (Chronic & Acute Pain, Sports Injuries, Work Injuries, Migraines & Headaches, Stress, Anxiety & Depression, Chronic Fatigue, Women's Health, Digestive Issues, Fertility).
+
+**Bug fixed same session**: the menu was closing the instant the cursor crossed the gap between the trigger and the dropdown (pure CSS `:hover` on `.nav-dropdown`, menu positioned `top: calc(100% + 0.9rem)` below it — leaving the trigger's hover box killed it before reaching the menu). Fixed in `scripts/app.js` by driving open/close from JS (`mouseenter`/`mouseleave` with a 350ms close-delay timer) instead of relying on hover alone; click-to-toggle and Escape-to-close unchanged. CSS `:hover` rule removed from `css/main.css`, kept `:focus-within` for keyboard nav.
+
+Committed as `92892aa` on `main`, pushed to origin.
