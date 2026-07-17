@@ -38,6 +38,15 @@ New template-based rebuild of holisticphysio.com.au, sourced from the original W
 
 Verified programmatically: 0 pages over the 60/160 char limits (HTML entities decoded before counting), 47/47 unique titles, 47/47 unique descriptions, HTML structure (`<head>`/`<title>` tag counts) intact on every page.
 
+### AI search (GEO/AEO) prep, done this session (from `/ai-seo`)
+Site isn't live yet, so no AI-citation baseline could be checked (nothing to audit). Structural prep only, so the site is AI-citable the moment it launches:
+7. **`robots.txt`** — explicitly allows `GPTBot`, `ChatGPT-User`, `ClaudeBot`, `anthropic-ai`, `PerplexityBot`, `Google-Extended`, `Bingbot` (was already permissive under the wildcard rule, made explicit for clarity/auditability).
+8. **`llms.txt`** — added at root: business summary, address/phone/hours/booking link, all therapy and condition pages, key pages, and the suburb service area, all linking to real live URLs.
+9. **`Person` schema** — added for Dr Sandra Tan on `about-us.html` (credentials: APA member, AACMA accredited, 20+ years, `worksFor` the business `@id`) for E-E-A-T authority signals.
+10. FAQ answer lengths across all 20 FAQ-bearing pages checked programmatically — all already under 75 words, extractable as standalone answer blocks.
+
+**Once live**: run the AI-visibility audit from `/ai-seo` (check ChatGPT/Perplexity/Google AI Overviews for key queries like "physio Highgate Hill", "acupuncture Brisbane") against both this new site and the old WordPress site it replaces, to get a real citation baseline.
+
 ### Not checkable yet (site isn't live)
 - Core Web Vitals / PageSpeed Insights — meaningless on `file://`, run once deployed
 - Search Console coverage / indexation — needs a live domain first

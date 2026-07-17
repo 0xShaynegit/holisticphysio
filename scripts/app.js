@@ -380,4 +380,17 @@
       if (e.key === "Escape") closeLightbox();
     });
   }
+
+  /* ---------- Obfuscated email buttons (no href, so no hover preview or
+     right-click "copy link" menu; address is only assembled on click) ---------- */
+  var emailButtons = document.querySelectorAll(".js-email");
+  emailButtons.forEach(function (el) {
+    el.addEventListener("click", function () {
+      var user = el.getAttribute("data-user");
+      var domain = el.getAttribute("data-domain");
+      if (user && domain) {
+        window.location.href = "mailto:" + user + "@" + domain;
+      }
+    });
+  });
 })();
