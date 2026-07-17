@@ -65,23 +65,53 @@
     });
   }
 
-  /* ---------- Therapies rail ---------- */
-  var rail = document.getElementById("care-rail");
-  var prevBtn = document.getElementById("rail-prev");
-  var nextBtn = document.getElementById("rail-next");
+  /* ---------- Generic rail/carousel setup ---------- */
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (rail && prevBtn && nextBtn) {
+  function setupRail(rail, prevBtn, nextBtn, cardSelector, autoplayMs, loop) {
+    if (!rail || !prevBtn || !nextBtn) return;
+
+    var originalCards, singleWidth;
+
+    if (loop) {
+      originalCards = Array.prototype.slice.call(rail.querySelectorAll(cardSelector));
+      originalCards.forEach(function (card) {
+        var clone = card.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        clone.removeAttribute("data-reveal");
+        rail.appendChild(clone);
+      });
+      singleWidth = rail.scrollWidth / 2;
+    }
+
     var step = function () {
-      var card = rail.querySelector(".care-card");
+      var card = rail.querySelector(cardSelector);
       return card ? card.getBoundingClientRect().width + 20 : 440;
     };
+
+    var normalizeLoop = function () {
+      if (!loop) return;
+      if (rail.scrollLeft >= singleWidth - 2) {
+        rail.scrollLeft -= singleWidth;
+      } else if (rail.scrollLeft <= 2) {
+        rail.scrollLeft += singleWidth;
+      }
+    };
+
     prevBtn.addEventListener("click", function () {
       rail.scrollBy({ left: -step(), behavior: "smooth" });
+      if (loop) setTimeout(normalizeLoop, 450);
     });
     nextBtn.addEventListener("click", function () {
       rail.scrollBy({ left: step(), behavior: "smooth" });
+      if (loop) setTimeout(normalizeLoop, 450);
     });
     var updateRailButtons = function () {
+      if (loop) {
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+        return;
+      }
       var max = rail.scrollWidth - rail.clientWidth - 2;
       prevBtn.disabled = rail.scrollLeft <= 2;
       nextBtn.disabled = rail.scrollLeft >= max;
@@ -89,7 +119,62 @@
     rail.addEventListener("scroll", updateRailButtons, { passive: true });
     window.addEventListener("resize", updateRailButtons);
     updateRailButtons();
+
+    if (!autoplayMs) return;
+
+    var autoplayTimer = null;
+
+    var stopAutoplay = function () {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    };
+
+    var startAutoplay = function () {
+      if (reduceMotion) return;
+      stopAutoplay();
+      autoplayTimer = setInterval(function () {
+        if (loop) {
+          rail.scrollBy({ left: step(), behavior: "smooth" });
+          setTimeout(normalizeLoop, 450);
+          return;
+        }
+        var max = rail.scrollWidth - rail.clientWidth - 2;
+        if (rail.scrollLeft >= max) {
+          rail.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          rail.scrollBy({ left: step(), behavior: "smooth" });
+        }
+      }, autoplayMs);
+    };
+
+    rail.addEventListener("mouseenter", stopAutoplay);
+    rail.addEventListener("mouseleave", startAutoplay);
+    rail.addEventListener("touchstart", stopAutoplay, { passive: true });
+    prevBtn.addEventListener("click", stopAutoplay);
+    nextBtn.addEventListener("click", stopAutoplay);
+
+    startAutoplay();
   }
+
+  setupRail(
+    document.getElementById("care-rail"),
+    document.getElementById("rail-prev"),
+    document.getElementById("rail-next"),
+    ".care-card",
+    4000,
+    true
+  );
+
+  setupRail(
+    document.getElementById("testimonial-rail"),
+    document.getElementById("testimonial-prev"),
+    document.getElementById("testimonial-next"),
+    ".testimonial-card",
+    5000,
+    true
+  );
 
   /* ---------- Conditions widget ---------- */
   var CONDITIONS = [
@@ -97,55 +182,64 @@
       name: "Chronic and acute pain",
       desc: "Pain that has settled in, or arrived suddenly, rarely has a single cause. We combine hands-on treatment with acupuncture and movement to calm it down and keep it away.",
       examples: ["Back pain", "Neck pain", "Frozen shoulder", "Sciatica", "Fibromyalgia"],
-      therapies: ["Physiotherapy", "Acupuncture", "Clinical Pilates"]
+      therapies: ["Physiotherapy", "Acupuncture", "Clinical Pilates"],
+      link: "pain.html"
     },
     {
       name: "Sports injuries",
       desc: "From weekend niggles to season-ending tears, the goal is the same: heal properly, rebuild strength, and return to sport without the injury coming back.",
       examples: ["Ankle sprains", "Knee injuries", "Groin strain", "Muscle and ligament tears"],
-      therapies: ["Physiotherapy", "Clinical Pilates", "Acupuncture"]
+      therapies: ["Physiotherapy", "Clinical Pilates", "Acupuncture"],
+      link: "sports-injuries.html"
     },
     {
       name: "Work injuries",
       desc: "Repetitive strain and desk-bound postures build up quietly. We treat the injury and correct the pattern that caused it, with WorkCover claims supported.",
       examples: ["Tennis elbow", "Carpal tunnel", "Shoulder blade pain", "Thumb pain"],
-      therapies: ["Physiotherapy", "Acupuncture"]
+      therapies: ["Physiotherapy", "Acupuncture"],
+      link: "work-injuries.html"
     },
     {
       name: "Migraines and headaches",
       desc: "Recurring headaches often trace back to the neck, jaw, stress load or internal imbalance. Treating those sources brings relief that painkillers cannot.",
       examples: ["Migraines", "Tension headaches", "Dizziness", "Vertigo"],
-      therapies: ["Acupuncture", "Physiotherapy", "Chinese Herbal Medicine"]
+      therapies: ["Acupuncture", "Physiotherapy", "Chinese Herbal Medicine"],
+      link: "migraines-and-headaches.html"
     },
     {
       name: "Stress, anxiety and depression",
       desc: "The body keeps the score: tight shoulders, poor sleep, a racing mind. Acupuncture and herbal medicine help settle the nervous system so you can cope well again.",
       examples: ["Panic attacks", "Poor sleep", "Tension", "Low mood"],
-      therapies: ["Acupuncture", "Chinese Herbal Medicine"]
+      therapies: ["Acupuncture", "Chinese Herbal Medicine"],
+      link: "stress-anxiety-and-depression.html"
     },
     {
       name: "Chronic fatigue",
       desc: "Tired no matter how much you rest? We look at the whole picture, digestion, sleep, stress and constitution, and rebuild your energy from the foundations.",
       examples: ["Constant tiredness", "No energy through the day", "Post-viral fatigue"],
-      therapies: ["Chinese Herbal Medicine", "Acupuncture"]
+      therapies: ["Chinese Herbal Medicine", "Acupuncture"],
+      link: "fatigue.html"
     },
     {
       name: "Women's health",
       desc: "Care through every stage: painful periods, hormonal swings, pregnancy, post-natal recovery and menopause, treated gently and holistically.",
       examples: ["PMT", "Period pain", "Menopause", "Pregnancy care", "Post-natal care"],
-      therapies: ["Acupuncture", "Chinese Herbal Medicine", "Clinical Pilates"]
+      therapies: ["Acupuncture", "Chinese Herbal Medicine", "Clinical Pilates"],
+      link: "womens-health.html"
     },
     {
       name: "Digestive issues",
       desc: "Digestion is central to how you feel every day. Herbal formulas and acupuncture work on the gut directly rather than just masking the discomfort.",
       examples: ["Irritable bowel syndrome", "Bloating", "Stomach pain"],
-      therapies: ["Chinese Herbal Medicine", "Acupuncture"]
+      therapies: ["Chinese Herbal Medicine", "Acupuncture"],
+      link: "digestive-issues.html"
     },
     {
       name: "Fertility",
       desc: "Support for natural conception and alongside IVF: balancing hormones, improving circulation and lowering stress to give you the best possible chance.",
       examples: ["Natural conception", "IVF support", "Hormonal balance"],
-      therapies: ["Fertility Acupuncture", "Chinese Herbal Medicine"]
+      therapies: ["Fertility Acupuncture", "Chinese Herbal Medicine"],
+      link: "fertility.html"
     }
   ];
 
@@ -154,6 +248,7 @@
   var cpDesc = document.getElementById("cp-desc");
   var cpExamples = document.getElementById("cp-examples");
   var cpTherapies = document.getElementById("cp-therapies");
+  var cpReadMore = document.getElementById("cp-readmore");
 
   if (pillsWrap && cpTitle) {
     var renderCondition = function (index) {
@@ -172,6 +267,9 @@
         li.textContent = t;
         cpTherapies.appendChild(li);
       });
+      if (cpReadMore) {
+        cpReadMore.href = c.link;
+      }
       pillsWrap.querySelectorAll(".pill").forEach(function (btn, i) {
         btn.setAttribute("aria-pressed", i === index ? "true" : "false");
       });
@@ -194,15 +292,15 @@
 
   /* ---------- Locations widget ---------- */
   var SUBURBS = [
-    ["West End", 4], ["Dutton Park", 4], ["South Brisbane", 5],
-    ["Fairfield", 6], ["Annerley", 6], ["Woolloongabba", 7],
-    ["East Brisbane", 8], ["Milton", 8], ["Kangaroo Point", 9],
-    ["Yeronga", 9], ["Spring Hill", 9], ["St Lucia", 10],
-    ["Toowong", 10], ["Coorparoo", 10], ["Stones Corner", 10],
-    ["Paddington", 10], ["Fortitude Valley", 10], ["Greenslopes", 11],
-    ["Tarragindi", 11], ["Moorooka", 11], ["New Farm", 12],
-    ["Holland Park", 12], ["Salisbury", 13], ["Sherwood", 13],
-    ["Indooroopilly", 13], ["Graceville", 14], ["Corinda", 15]
+    ["West End", 4, "west-end.html"], ["Dutton Park", 4, "dutton-park.html"], ["South Brisbane", 5, "south-brisbane.html"],
+    ["Fairfield", 6, "fairfield.html"], ["Annerley", 6, "annerley.html"], ["Woolloongabba", 7, "woolloongabba.html"],
+    ["East Brisbane", 8, "east-brisbane.html"], ["Milton", 8, "milton.html"], ["Kangaroo Point", 9, "kangaroo-point.html"],
+    ["Yeronga", 9, "yeronga.html"], ["Spring Hill", 9, "spring-hill.html"], ["St Lucia", 10, "st-lucia.html"],
+    ["Toowong", 10, "toowong.html"], ["Coorparoo", 10, "coorparoo.html"], ["Stones Corner", 10, "stones-corner.html"],
+    ["Paddington", 10, "paddington.html"], ["Fortitude Valley", 10, "fortitude-valley.html"], ["Greenslopes", 11, "greenslopes.html"],
+    ["Tarragindi", 11, "tarragindi.html"], ["Moorooka", 11, "moorooka.html"], ["New Farm", 12, "new-farm.html"],
+    ["Holland Park", 12, "holland-park.html"], ["Salisbury", 13, "salisbury.html"], ["Sherwood", 13, "sherwood.html"],
+    ["Indooroopilly", 13, "indooroopilly.html"], ["Graceville", 14, "graceville.html"], ["Corinda", 15, "corinda.html"]
   ];
 
   var suburbWrap = document.getElementById("suburb-pills");
@@ -211,21 +309,23 @@
 
   if (suburbWrap && distValue) {
     SUBURBS.forEach(function (entry) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "pill";
-      btn.textContent = entry[0];
-      btn.setAttribute("aria-pressed", "false");
-      btn.addEventListener("click", function () {
+      var link = document.createElement("a");
+      link.href = entry[2];
+      link.className = "pill";
+      link.textContent = entry[0];
+      link.setAttribute("aria-pressed", "false");
+      link.addEventListener("click", function (e) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+        e.preventDefault();
         suburbWrap.querySelectorAll(".pill").forEach(function (b) {
-          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+          b.setAttribute("aria-pressed", b === link ? "true" : "false");
         });
         distValue.innerHTML =
           "~" + entry[1] + ' <span class="accent">min drive</span>';
         distNote.textContent =
           "Approximate drive from " + entry[0] + " to the clinic, outside peak times.";
       });
-      suburbWrap.appendChild(btn);
+      suburbWrap.appendChild(link);
     });
   }
 
@@ -240,4 +340,44 @@
       }
     });
   });
+
+  /* ---------- Lightbox ---------- */
+  var lightbox = document.getElementById("lightbox");
+  if (lightbox) {
+    var lightboxImg = document.getElementById("lightbox-img");
+    var lightboxLink = document.getElementById("lightbox-link");
+    var lightboxTriggers = document.querySelectorAll("[data-lightbox-image]");
+
+    function openLightbox(trigger) {
+      lightboxImg.src = trigger.getAttribute("data-lightbox-image");
+      lightboxImg.alt = trigger.getAttribute("data-lightbox-alt") || "";
+      if (lightboxLink) {
+        lightboxLink.href = trigger.getAttribute("data-lightbox-href") || "#";
+      }
+      lightbox.classList.add("is-active");
+      lightbox.setAttribute("aria-hidden", "false");
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("is-active");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxImg.src = "";
+    }
+
+    lightboxTriggers.forEach(function (trigger) {
+      trigger.addEventListener("click", function () {
+        openLightbox(trigger);
+      });
+    });
+
+    lightbox.addEventListener("click", function (e) {
+      if (e.target === lightbox || e.target.closest(".lightbox-close")) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeLightbox();
+    });
+  }
 })();
