@@ -233,6 +233,14 @@
   );
 
   /* ---------- Conditions widget ---------- */
+  var THERAPY_LINKS = {
+    "Physiotherapy": "physiotherapy.html",
+    "Acupuncture": "acupuncture.html",
+    "Chinese Herbal Medicine": "chinese-herbal-medicine.html",
+    "Clinical Pilates": "clinical-pilates.html",
+    "Fertility Acupuncture": "fertility-acupuncture.html"
+  };
+
   var CONDITIONS = [
     {
       name: "Chronic and acute pain",
@@ -274,7 +282,7 @@
       desc: "Anxiety and depression are not just in the mind, they show up in the body: tight muscles, disrupted sleep, low energy. We offer calming, evidence-informed support alongside any care you already receive.",
       examples: ["Panic attacks", "Poor sleep", "Physical tension", "Low mood"],
       therapies: ["Acupuncture", "Chinese Herbal Medicine"],
-      link: "stress-anxiety-and-depression.html"
+      link: "anxiety-and-depression.html"
     },
     {
       name: "Chronic fatigue",
@@ -327,7 +335,15 @@
       cpTherapies.innerHTML = "";
       c.therapies.forEach(function (t) {
         var li = document.createElement("li");
-        li.textContent = t;
+        var href = THERAPY_LINKS[t];
+        if (href) {
+          var a = document.createElement("a");
+          a.href = href;
+          a.textContent = t;
+          li.appendChild(a);
+        } else {
+          li.textContent = t;
+        }
         cpTherapies.appendChild(li);
       });
       if (cpReadMore) {

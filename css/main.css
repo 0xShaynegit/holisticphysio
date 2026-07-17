@@ -939,6 +939,15 @@ section {
   flex: none;
 }
 
+.condition-therapies li a {
+  text-decoration: none;
+}
+
+.condition-therapies li a:hover {
+  color: var(--teal);
+  text-decoration: underline;
+}
+
 .condition-panel .btn {
   margin-top: 1.75rem;
 }

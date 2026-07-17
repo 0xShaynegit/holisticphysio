@@ -8,7 +8,7 @@ New template-based rebuild of holisticphysio.com.au, sourced from the original W
 
 **Structure:**
 - `index.html` — homepage
-- 13 service/condition pages: `acupuncture`, `physiotherapy`, `chinese-herbal-medicine`, `clinical-pilates`, `fertility-acupuncture`, `pain`, `fatigue`, `stress`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `stress-anxiety-and-depression`, `fertility`
+- 13 service/condition pages: `acupuncture`, `physiotherapy`, `chinese-herbal-medicine`, `clinical-pilates`, `fertility-acupuncture`, `pain`, `fatigue`, `stress`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `anxiety-and-depression`, `fertility`
 - 27 suburb pages (Brisbane inner suburbs, templated)
 - 6 misc pages: `about-us`, `contact`, `faq-frequently-asked-questions`, `holistic-physio-difference`
 - `css/main.css`, `scripts/app.js` — shared across every page
@@ -76,6 +76,16 @@ Site isn't live yet, so no AI-citation baseline could be checked (nothing to aud
 - Google review testimonials sourced from `.md/reviews from google.txt` (~40 real reviews). Only ~15-20 have been used across the homepage + 5 therapy pages carousels/grids so far; more are available if additional variety is wanted later. All ratings are 5-star except Dorothy Shanks (4-star) — this is reflected accurately in the star icons used.
 
 ---
+
+## Renamed: stress-anxiety-and-depression → anxiety-and-depression
+
+User decision: "stress" and "anxiety and depression" must stay clearly separate pages, not conflated as one — `stress.html` covers physical stress symptoms, this page owns the mental-health angle only. Renamed the file and updated every reference site-wide: nav dropdown (all 50 pages), sitemap.xml, llms.txt, canonical/og:url self-refs, JSON-LD schema, and the `CONDITIONS` array + `link` value in `scripts/app.js`. Also removed the borrowed acupuncture photo (`condition-needle-shoulder.webp`) and the two borrowed `fatigue-*` photos this page was still reusing — it now uses only its own 6 dedicated anxiety/depression photos across hero, both visit-section images, and 3 photo-break sections (no duplicates).
+
+## Internal linking audit (from `/seo-internal-linking`)
+
+Found and fixed a sitewide gap: condition pages (`pain`, `fatigue`, `stress`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `anxiety-and-depression`) each had a "how we treat it" list naming the exact therapies used (Acupuncture, Physiotherapy, Clinical Pilates, Chinese herbal medicine) as **unlinked bold text**. Same gap in reverse on `acupuncture.html`'s condition list (Musculoskeletal pain, Women's health & fertility, Stress/anxiety/fatigue, Digestive complaints) and `clinical-pilates.html` (Pregnancy and postnatal support). All now link to their matching pages. Also fixed the homepage's JS-rendered condition-picker widget (`scripts/app.js` `THERAPY_LINKS` map) so the "how we usually treat it" list there links out too, not just the static pages.
+
+Not yet done: lateral sibling links between related conditions (stress ↔ anxiety-and-depression ↔ fatigue; pain ↔ sports-injuries ↔ work-injuries; fertility ↔ fertility-acupuncture ↔ womens-health) — flagged in the audit as a next step but not implemented this session.
 
 ## Verification status
 
