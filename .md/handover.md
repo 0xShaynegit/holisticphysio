@@ -4,99 +4,77 @@ Last updated: 2026-07-17
 
 ## Project state
 
-New template-based rebuild of holisticphysio.com.au, sourced from the original WordPress export at `C:\1myguy\projects\holisticphysio.com.au ORIGINAL`. 47 HTML pages, static site, no build step. Root directory is the live document root (flat file structure, e.g. `acupuncture.html`, `annerley.html`).
+Template-based rebuild of holisticphysio.com.au, sourced from the original WordPress export at `C:\1myguy\projects\holisticphysio.com.au ORIGINAL`. 50 HTML pages, static site, no build step. Root directory is the live document root (flat file structure, e.g. `acupuncture.html`, `annerley.html`).
 
 **Structure:**
 - `index.html` — homepage
-- 13 service/condition pages: `acupuncture`, `physiotherapy`, `chinese-herbal-medicine`, `clinical-pilates`, `fertility-acupuncture`, `pain`, `fatigue`, `stress`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `anxiety-and-depression`, `fertility`
+- 4 therapy pages: `physiotherapy`, `acupuncture`, `chinese-herbal-medicine`, `clinical-pilates`
+- 11 condition/specialised pages: `pain`, `fatigue`, `stress`, `anxiety-and-depression`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `fertility`, `fertility-acupuncture`
 - 27 suburb pages (Brisbane inner suburbs, templated)
-- 6 misc pages: `about-us`, `contact`, `faq-frequently-asked-questions`, `holistic-physio-difference`
+- 8 support/trust pages: `about-us`, `contact`, `faq-frequently-asked-questions`, `holistic-physio-difference`, `privacy-policy`, `terms-and-conditions`, `disclaimer`
 - `css/main.css`, `scripts/app.js` — shared across every page
 - `images/` — all real photos, converted to `.webp`, named `holisticphysio-holistic-physio-{semantic}.webp`
 
 **Deliberately not built (do not recreate these):**
 - `chronic-and-acute-pain.html` and `chronic-fatigue.html` — original site had these as separate nav items, but their content is a full subset of what `pain.html` and `fatigue.html` already cover. Building duplicates would cannibalize rankings.
 - `pregnancy-and-fertility.html` — was a dead 404 in the original site, no real content ever existed for it.
+- `services.html` — original was an unfinished WordPress placeholder stub (literal "consider using this if you need more context" boilerplate), just duplicating nav links already on this site.
 
 ---
 
-## Outstanding: SEO (from `/seo-audit`)
+## SEO foundation (from `/seo-audit` and `/ai-seo`)
 
-### Done this session
-1. **`sitemap.xml`** — added at root, lists all 47 pages, referenced from `robots.txt`.
-2. **`robots.txt`** — added, allows all, points to the sitemap.
-3. **Canonical tags** — every page now has a self-referencing `<link rel="canonical" href="https://holisticphysio.com.au/{page}">` (root `/` for `index.html`).
-4. **Schema markup** — added via JSON-LD on every page:
-   - `MedicalBusiness` (address, phone, email, geo, `sameAs` Facebook/LinkedIn, `hasMap` using the confirmed Google Place ID `ChIJPYIJUwtakWsRsGcrZF1zqa4`, and `openingHoursSpecification`: Mon 10:00–18:30, Tue 13:30–17:30, Thu 10:00–18:30, closed Wed/Fri/Sat/Sun — pulled live from the Google Maps listing, confirmed by user, not guessed)
-   - `FAQPage` on the 20 pages that have a `.faq-list` section, auto-extracted from the real `<summary>`/`<p>` Q&A pairs already on the page
+- `sitemap.xml` and `robots.txt` at root, all 50 pages listed, explicitly allows `GPTBot`, `ChatGPT-User`, `ClaudeBot`, `anthropic-ai`, `PerplexityBot`, `Google-Extended`, `Bingbot`.
+- `llms.txt` at root: business summary, address/phone/hours/booking link, all pages linked.
+- Self-referencing canonical tags on every page.
+- Schema markup (JSON-LD) on every page: `MedicalBusiness` (address, phone, email, geo, `sameAs`, `hasMap` via confirmed Google Place ID `ChIJPYIJUwtakWsRsGcrZF1zqa4`, `openingHoursSpecification`: Mon 10:00–18:30, Tue 13:30–17:30, Thu 10:00–18:30, closed Wed/Fri/Sat/Sun), `FAQPage` on pages with a `.faq-list` section, `Person` schema for Dr Sandra Tan on `about-us.html`.
+- Open Graph / Twitter card tags on all 50 pages: `og:title`/`description`/`url`/`image` + `twitter:card`, sharing one dedicated image `images/holisticphysio-holistic-physio-ogshare.webp` (1200×630).
+- Titles ≤65 rendered characters, meta descriptions ≤160, unique across the site.
+- Domain used throughout: `https://holisticphysio.com.au` (site not live yet — re-verify all canonical/sitemap/og URLs match the real domain before launch if this changes).
 
-   Domain used throughout: `https://holisticphysio.com.au` (site not live yet — re-verify canonical/sitemap URLs match the real domain before launch if this changes).
+**Not checkable yet (site isn't live):** Core Web Vitals, Search Console coverage, Mobile-Friendly Test — all need a live domain first. Once live, run the AI-visibility audit from `/ai-seo` (ChatGPT/Perplexity/Google AI Overviews for queries like "physio Highgate Hill") to get a citation baseline.
 
-### Done this session (cont.)
-5. **Title tags** — all 47 trimmed to ≤65 rendered characters (≤60 on all but a couple), unique across the site. Suburb pages use a shared trimmed template (`Physio & Acupuncture near {Suburb} | Holistic Physio`); service/misc pages hand-trimmed individually.
-6. **Meta descriptions** — all 47 trimmed to ≤160 rendered characters, unique across the site.
+### Internal linking (from `/seo-internal-linking`)
 
-Verified programmatically: 0 pages over the 60/160 char limits (HTML entities decoded before counting), 47/47 unique titles, 47/47 unique descriptions, HTML structure (`<head>`/`<title>` tag counts) intact on every page.
+Audited and fixed a sitewide gap: every condition page had a "how we treat it" list naming its therapies (Acupuncture, Physiotherapy, Clinical Pilates, Chinese herbal medicine) as **unlinked bold text**, and `acupuncture.html`'s condition list had the same gap in reverse. All now link to their matching pages, including the homepage's JS-rendered condition-picker widget (`scripts/app.js`, `THERAPY_LINKS` map).
 
-### AI search (GEO/AEO) prep, done this session (from `/ai-seo`)
-Site isn't live yet, so no AI-citation baseline could be checked (nothing to audit). Structural prep only, so the site is AI-citable the moment it launches:
-7. **`robots.txt`** — explicitly allows `GPTBot`, `ChatGPT-User`, `ClaudeBot`, `anthropic-ai`, `PerplexityBot`, `Google-Extended`, `Bingbot` (was already permissive under the wildcard rule, made explicit for clarity/auditability).
-8. **`llms.txt`** — added at root: business summary, address/phone/hours/booking link, all therapy and condition pages, key pages, and the suburb service area, all linking to real live URLs.
-9. **`Person` schema** — added for Dr Sandra Tan on `about-us.html` (credentials: APA member, AACMA accredited, 20+ years, `worksFor` the business `@id`) for E-E-A-T authority signals.
-10. FAQ answer lengths across all 20 FAQ-bearing pages checked programmatically — all already under 75 words, extractable as standalone answer blocks.
+Lateral cross-links between related conditions were added **only** where the existing copy already named the other topic explicitly (no invented anchors): `digestive-issues → stress`, `stress → fatigue`, `pain → sports-injuries`, `womens-health → fertility`, `fertility-acupuncture → womens-health`. Deliberately did **not** link `stress ↔ anxiety-and-depression` — see rename note below, that link would recreate the exact conflation the rename fixed.
 
-**Once live**: run the AI-visibility audit from `/ai-seo` (check ChatGPT/Perplexity/Google AI Overviews for key queries like "physio Highgate Hill", "acupuncture Brisbane") against both this new site and the old WordPress site it replaces, to get a real citation baseline.
-
-### Not checkable yet (site isn't live)
-- Core Web Vitals / PageSpeed Insights — meaningless on `file://`, run once deployed
-- Search Console coverage / indexation — needs a live domain first
-- Mobile-Friendly Test — same
-
-### Fixed this session
-- **27 orphaned suburb pages** — previously had zero internal links pointing to them anywhere on the site (the homepage distance-calculator only used JS `<button>` elements, not links). Fixed three ways: (1) suburb pills are now real `<a href>` links that still preserve the click-to-see-distance UX, (2) added a site-wide "Areas we serve" footer grid linking all 27 suburbs from every page, (3) added suburb-to-suburb "Nearby areas" cross-links using real Brisbane geography (each suburb page links to 2-3 geographic neighbours).
-- Softened all "yes you're covered" health fund/Medicare claims across the site to "in most cases" + "check with your fund" language.
+Suburb pages (27) are fully linked: real `<a href>` distance-calculator pills, a site-wide "Areas we serve" footer grid, and suburb-to-suburb "Nearby areas" cross-links using real Brisbane geography.
 
 ---
 
-## Outstanding: content / images
+## Site history / notable fixes this project
 
-- **`stress-anxiety-and-depression.html`** is the one remaining page still reusing generic photos (the fatigue couch/tea images) rather than a dedicated photo. Original archive had no real photo for this specific topic — still open if a better photo turns up.
-- **38 unconverted-but-imported photos** sit in `images/` prefixed `holisticphysio-holistic-physio-extra-*.webp` — pulled from the original archive per the "bring in everything over 2KB" request, but not yet curated/assigned to any page. Available for future page refreshes (more Pilates, fatigue, pain lifestyle shots, a Brisbane skyline shot, an alternate clinic exterior, etc.)
-- No **privacy policy** or **terms** page exists anywhere on the site. Not part of the original scope but flagged since it's a standard trust signal (E-E-A-T) and likely expected at launch, especially since the contact form / booking portal (Zanda Health) collects personal health information.
+- **`anxiety-and-depression.html`** (was `stress-anxiety-and-depression.html`) — renamed so it doesn't cannibalize `stress.html`; `stress.html` = physical stress symptoms, this page = the mental-health angle only. Updated every reference site-wide (nav, sitemap, llms.txt, canonical/og:url, schema, `scripts/app.js`). No longer reuses the acupuncture photo or the fatigue page's photos — runs on 6 of its own dedicated images (hero, 2 visit sections, 3 photo-break sections, no duplicates).
+- **Mobile horizontal overflow** — `.footer-links` wasn't a wrapping flexbox, so 5 nav items forced the whole page to scroll sideways on mobile. Fixed with `flex-wrap` + `overflow-x: hidden` safety net on `html, body`; "Our Difference" now drops to its own line under the other four footer links on mobile.
+- **Legal pages** — `privacy-policy.html`, `terms-and-conditions.html`, `disclaimer.html` added, physiotherapy-appropriate content (APPs/health-info handling, booking/Medicare/HICAPS terms, medical disclaimer). Linked from a `footer-legal` nav on every page, same text size as the copyright line.
+- **Nav "Issues" dropdown** — lists all condition pages. Originally pure-CSS `:hover`, which closed instantly when the cursor crossed the gap to the menu. Fixed by driving open/close from JS (`mouseenter`/`mouseleave` with a 350ms close-delay timer); click-to-toggle and Escape-to-close unchanged.
+- **New topic photography** — sourced and converted 25 real photos (bathroom/stomach pain, sports injuries, women's health, workplace injuries, anxiety/depression) to webp, one per condition previously stuck with generic or icon-only imagery. Initially placed as a single gallery block per page, then **corrected to be spread individually between each content section** (a `.photo-break` component woven between sections) per explicit feedback — not bundled together.
+- **27 orphaned suburb pages** — previously zero internal links pointed to them. Fixed via real `<a href>` distance pills, footer "Areas we serve" grid, and suburb-to-suburb nearby-area cross-links.
+- Softened all "yes you're covered" health fund/Medicare claims sitewide to "in most cases" + "check with your fund" language.
+
+---
+
+## Outstanding
+
+- **38 unconverted-but-imported photos** sit in `images/` prefixed `holisticphysio-holistic-physio-extra-*.webp` — pulled from the original archive, not yet curated/assigned to any page. Available for future page refreshes.
+- Lateral cross-links were deliberately kept minimal (see above) — if more conditions get dedicated copy that naturally references another condition, add the link then rather than forcing one now.
 
 ---
 
 ## Standing conventions (for future work on this project)
 
 - **Image naming**: `holisticphysio-holistic-physio-{semantic-or-page}-{description}.webp`, strip WordPress hash suffixes, convert everything to webp. Source of truth for original photos/content is `C:\1myguy\projects\holisticphysio.com.au ORIGINAL`.
-- **Real content only** — no fake CTAs, no reused stock photos as generic decoration, no invented content when the original site has real copy to pull from. Where original topics had zero content ("coming soon" stubs), original-voice copy was written to match the site's tone rather than left thin.
-- **No em dashes** anywhere (chat replies or page copy) — checked and clean site-wide as of this session.
-- **Purple accent** (`#930f86` / `#690a60`, CSS vars `--purple` / `--purple-deep` / `--purple-tint`) is used for the nav bar and the "difference"-pattern purple sections, layered on top of the primary green brand palette (`--brand` etc.) — pulled from the real original site's nav colour, not invented.
-- Site-wide reusable sections follow a component pattern (`.hero`, `.mission`, `.visit`, `.difference`, `.testimonials`, `.faq`, `.contact`, `.footer`) shared via `css/main.css` — new pages should reuse these rather than one-off styles.
-- Google review testimonials sourced from `.md/reviews from google.txt` (~40 real reviews). Only ~15-20 have been used across the homepage + 5 therapy pages carousels/grids so far; more are available if additional variety is wanted later. All ratings are 5-star except Dorothy Shanks (4-star) — this is reflected accurately in the star icons used.
+- **Real content only** — no fake CTAs, no reused stock photos as generic decoration, no invented content when the original site has real copy to pull from.
+- **No em dashes** anywhere (chat replies or page copy).
+- **Purple accent** (`#930f86` / `#690a60`, CSS vars `--purple` / `--purple-deep` / `--purple-tint`) for the nav bar and "difference"-pattern sections, layered on the primary green brand palette (`--brand` etc.) — pulled from the real original site's nav colour.
+- Site-wide reusable component pattern (`.hero`, `.mission`, `.visit`, `.difference`, `.testimonials`, `.faq`, `.contact`, `.footer`, `.photo-break`, `.legal`) shared via `css/main.css` — new pages should reuse these rather than one-off styles.
+- Google review testimonials sourced from `.md/reviews from google.txt` (~40 real reviews). Only ~15-20 used so far across homepage + 5 therapy pages; more available for variety. All 5-star except Dorothy Shanks (4-star), reflected accurately in star icons.
+- Internal-linking philosophy: only link where the existing copy already names the target topic — don't invent cross-references just to hit a linking quota.
 
 ---
-
-## Renamed: stress-anxiety-and-depression → anxiety-and-depression
-
-User decision: "stress" and "anxiety and depression" must stay clearly separate pages, not conflated as one — `stress.html` covers physical stress symptoms, this page owns the mental-health angle only. Renamed the file and updated every reference site-wide: nav dropdown (all 50 pages), sitemap.xml, llms.txt, canonical/og:url self-refs, JSON-LD schema, and the `CONDITIONS` array + `link` value in `scripts/app.js`. Also removed the borrowed acupuncture photo (`condition-needle-shoulder.webp`) and the two borrowed `fatigue-*` photos this page was still reusing — it now uses only its own 6 dedicated anxiety/depression photos across hero, both visit-section images, and 3 photo-break sections (no duplicates).
-
-## Internal linking audit (from `/seo-internal-linking`)
-
-Found and fixed a sitewide gap: condition pages (`pain`, `fatigue`, `stress`, `digestive-issues`, `migraines-and-headaches`, `sports-injuries`, `womens-health`, `work-injuries`, `anxiety-and-depression`) each had a "how we treat it" list naming the exact therapies used (Acupuncture, Physiotherapy, Clinical Pilates, Chinese herbal medicine) as **unlinked bold text**. Same gap in reverse on `acupuncture.html`'s condition list (Musculoskeletal pain, Women's health & fertility, Stress/anxiety/fatigue, Digestive complaints) and `clinical-pilates.html` (Pregnancy and postnatal support). All now link to their matching pages. Also fixed the homepage's JS-rendered condition-picker widget (`scripts/app.js` `THERAPY_LINKS` map) so the "how we usually treat it" list there links out too, not just the static pages.
-
-Not yet done: lateral sibling links between related conditions (stress ↔ anxiety-and-depression ↔ fatigue; pain ↔ sports-injuries ↔ work-injuries; fertility ↔ fertility-acupuncture ↔ womens-health) — flagged in the audit as a next step but not implemented this session.
 
 ## Verification status
 
-Every change this session was verified with a full-site Playwright pass (all 47 pages): zero console errors, zero failed network requests, all internal links resolve. Last full clean pass confirmed at end of this session.
-
----
-
-## Nav: "Issues" dropdown (added, then hover-fixed)
-
-Added an "Issues" dropdown to the main nav on all 47 pages, listing the 10 condition pages (Chronic & Acute Pain, Sports Injuries, Work Injuries, Migraines & Headaches, Stress, Anxiety & Depression, Chronic Fatigue, Women's Health, Digestive Issues, Fertility).
-
-**Bug fixed same session**: the menu was closing the instant the cursor crossed the gap between the trigger and the dropdown (pure CSS `:hover` on `.nav-dropdown`, menu positioned `top: calc(100% + 0.9rem)` below it — leaving the trigger's hover box killed it before reaching the menu). Fixed in `scripts/app.js` by driving open/close from JS (`mouseenter`/`mouseleave` with a 350ms close-delay timer) instead of relying on hover alone; click-to-toggle and Escape-to-close unchanged. CSS `:hover` rule removed from `css/main.css`, kept `:focus-within` for keyboard nav.
-
-Committed as `92892aa` on `main`, pushed to origin.
+Full-site Playwright pass (all pages) confirmed zero console errors, zero failed network requests, all internal links resolving, as of the SEO-foundation session. This session's HTML/CSS/JS changes were verified via tag-balance checks and image-path resolution scripts (no live browser available in this session) — worth a manual/Playwright pass before considering this fully closed.
